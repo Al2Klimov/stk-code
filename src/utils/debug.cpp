@@ -130,6 +130,7 @@ enum DebugMenuCommand
     DEBUG_POWERUP_SWATTER,
     DEBUG_POWERUP_SWITCH,
     DEBUG_POWERUP_ZIPPER,
+    DEBUG_POWERUP_SHUFFLER,
     DEBUG_POWERUP_NITRO,
     DEBUG_POWERUP_NOTHING,
     DEBUG_NITRO_CLEAR,
@@ -628,6 +629,9 @@ bool handleContextMenuAction(s32 cmd_id)
         break;
     case DEBUG_POWERUP_SWITCH:
         addPowerup(PowerupManager::POWERUP_SWITCH, 255);
+        break;
+    case DEBUG_POWERUP_SHUFFLER:
+        addPowerup(PowerupManager::POWERUP_SHUFFLER, 255);
         break;
     case DEBUG_POWERUP_ZIPPER:
         addPowerup(PowerupManager::POWERUP_ZIPPER, 255);
@@ -1323,6 +1327,7 @@ bool onEvent(const SEvent &event)
             sub->addItem(L"Swatter (F8)", DEBUG_POWERUP_SWATTER );
             sub->addItem(L"Switch (F9)", DEBUG_POWERUP_SWITCH );
             sub->addItem(L"Zipper (F10)", DEBUG_POWERUP_ZIPPER );
+            sub->addItem(L"Shuffler", DEBUG_POWERUP_SHUFFLER );
             sub->addItem(L"Nitro (Insert)", DEBUG_POWERUP_NITRO );
 
             mnu->addItem(L"Attachments >",-1,true, true);

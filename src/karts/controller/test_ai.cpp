@@ -1405,6 +1405,10 @@ void SkiddingAI::handleItems(const float dt)
         }
         break;   // POWERUP_ANVIL
 
+    case PowerupManager::POWERUP_SHUFFLER:
+        m_controls->setFire(true);
+        break;   // POWERUP_SHUFFLER
+
     case PowerupManager::POWERUP_SWATTER:
         {
             // Squared distance for which the swatter works

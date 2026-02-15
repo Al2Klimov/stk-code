@@ -128,6 +128,7 @@ private:
 public:
     // The anvil and parachute must be at the end of the enum, and the
     // zipper just before them (see Powerup::hitBonusBox).
+    // The shuffler is added after anvil.
     enum PowerupType {POWERUP_NOTHING,
                       POWERUP_FIRST,
                       POWERUP_BUBBLEGUM = POWERUP_FIRST,
@@ -136,7 +137,8 @@ public:
                       POWERUP_SWITCH, POWERUP_SWATTER, POWERUP_RUBBERBALL,
                       POWERUP_PARACHUTE,
                       POWERUP_ANVIL,      //powerup.cpp assumes these two come last
-                      POWERUP_LAST=POWERUP_ANVIL,
+                      POWERUP_SHUFFLER,
+                      POWERUP_LAST=POWERUP_SHUFFLER,
                       POWERUP_MAX
     };
 
