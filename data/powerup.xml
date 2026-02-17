@@ -157,15 +157,15 @@
            because the others are used for interpolation when
            there are two karts or more. -->
       <!--            bubble   cake  bowl zipper  plunger  switch swattr rubber para  anvil  shuf -->
-      <weight single  ="140      0   300   100      225      75     160     0     0     0     0"
+      <weight single  ="140      0   290   100      225      75     160     0     0     0    10"
               multi   ="  0      0     0     0        0       0       0     0     0     0     0" />
-      <weight single  ="150      0   295   130      200      70     135     0     0     0     0"
+      <weight single  ="150      0   285   130      200      70     135     0     0     0    10"
               multi   ="  0      0    20     0        0       0       0     0     0     0     0" />
-      <weight single  ="150      0   310   135      180      65     135     0     0     0     0"
+      <weight single  ="150      0   300   135      180      65     135     0     0     0    10"
               multi   ="  0      0    25     0        0       0       0     0     0     0     0" />
-      <weight single  ="155      0   280   180      170      60     125     0     0     0     0"
+      <weight single  ="155      0   270   180      170      60     125     0     0     0    10"
               multi   ="  0      0    30     0        0       0       0     0     0     0     0" />
-      <weight single  ="170      0   180   275      150      50      85     0     0     0     0"
+      <weight single  ="170      0   170   275      150      50      85     0     0     0    10"
               multi   ="  0      0    90     0        0       0       0     0     0     0     0" />
     </weights>
     <weights num-karts="5">
@@ -226,17 +226,17 @@
     <weights num-karts="1">
       <!--              bubble  cake  bowl  zipper  plunger  switch swattr rubber para  anvil  shuf -->
       <!-- This is the entry for the leader: -->
-      <weight single  ="35       0    25    35      25       15      25     0     0     0     0"
+      <weight single  ="35       0    20    35      25       15      25     0     0     0     5"
               multi   ="20       0     0    20       0        0       0     0     0     0     0" />
       <!-- This is the entry for the first non-leader karts: -->
-      <weight single  ="25       0    60    25      58        2      30     0     0     0     0"
+      <weight single  ="25       0    55    25      58        2      30     0     0     0     5"
               multi   =" 0       0     0     0       0        0       0     0     0     0     0" />
-      <weight single  ="35       0    55    35      25        3      25     0     0     0     0"
+      <weight single  ="35       0    50    35      25        3      25     0     0     0     5"
               multi   =" 0       0    10     0      12        0       0     0     0     0     0" />
-      <weight single  ="25       0    40    45      15        5      15    10     5     0     0"
+      <weight single  ="25       0    35    45      15        5      15    10     5     0     5"
               multi   ="10       0    15    15       0        0       0     0     0     0     0" />
       <!-- This is the entry for the last kart: -->
-      <weight single  ="20       0    15    25       0        0       0     0    15     0     0"
+      <weight single  ="20       0    10    25       0        0       0     0    15     0     5"
               multi   ="20       0    25    80       0        0       0     0     0     0     0" />
     </weights>
   </ftl-weight-list>
@@ -244,7 +244,7 @@
   <battle-weight-list>
     <weights num-karts="1">
       <!--              bubble  cake  bowl  zipper  plunger  switch swattr rubber para  anvil  shuf -->
-      <weight single  ="10      30    60     0       0       10      30     0     0     0     0"
+      <weight single  ="10      30    55     0       0       10      30     0     0     0     5"
               multi   =" 0       0     5     0       0        0       0     0     0     0     0"    />
     </weights>
   </battle-weight-list>
@@ -252,7 +252,7 @@
   <soccer-weight-list>
     <weights num-karts="1">
       <!--               bubble  cake  bowl  zipper  plunger switch swattr rubber para  anvil  shuf -->
-      <weight single  =" 0      30    60     0       0       10      30     0     0     0     0"
+      <weight single  =" 0      30    55     0       0       10      30     0     0     0     5"
               multi   =" 0       0     5     0       0        0       0     0     0     0     0"    />
     </weights>
   </soccer-weight-list>
