@@ -615,8 +615,8 @@ bool Flyable::tryDeflectBySwatter(AbstractKart* kart)
     // kinematic m_initial_velocity separately from the physics body.
     setVelocity(new_vel);
 
-    // Consume the swatter
-    attachment->clear();
+    // Trigger swing animation and consume the swatter
+    swatter->playDeflectSwing();
 
     return true;
 }   // tryDeflectBySwatter
