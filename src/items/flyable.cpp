@@ -601,8 +601,12 @@ bool Flyable::tryDeflectBySwatter(AbstractKart* kart)
     float rad = angle_deg * M_PI / 180.0f;
     float c = cosf(rad);
     float s = sinf(rad);
+    // Cakes fly downward, so mirror Y to deflect them upward.
+    // Bowling balls roll on the ground, so preserve Y as-is.
+    float new_y = (getType() == PowerupManager::POWERUP_CAKE)
+                ? -vel.y() : vel.y();
     btVector3 new_vel(c * vel.x() + s * vel.z(),
-                      vel.y(),
+                      new_y,
                       -s * vel.x() + c * vel.z());
     m_body->setLinearVelocity(new_vel);
     // Also call setVelocity for Cake which overrides it to update its
