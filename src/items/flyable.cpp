@@ -603,8 +603,10 @@ bool Flyable::tryDeflectBySwatter(AbstractKart* kart)
     float s = sinf(rad);
     // Cakes fly downward, so mirror Y to deflect them upward.
     // Bowling balls roll on the ground, so preserve Y as-is.
+    // Add ±20% random variation so the deflection isn't too perfect.
+    float y_factor = 0.8f + (float)random.get(41) / 100.0f;  // 0.80..1.20
     float new_y = (getType() == PowerupManager::POWERUP_CAKE)
-                ? -vel.y() : vel.y();
+                ? -vel.y() * y_factor : vel.y() * y_factor;
     btVector3 new_vel(c * vel.x() + s * vel.z(),
                       new_y,
                       -s * vel.x() + c * vel.z());
