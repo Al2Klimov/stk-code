@@ -596,10 +596,12 @@ bool Flyable::tryDeflectBySwatter(AbstractKart* kart)
     btVector3 vel = m_body->getLinearVelocity();
     btVector3 new_vel;
     if (random.get(2) == 0)
-        new_vel = btVector3(-vel.z(), vel.y(), vel.x());   // +90 degrees
+        new_vel = btVector3(vel.z(), vel.y(), -vel.x());   // +90 degrees
     else
-        new_vel = btVector3(vel.z(), vel.y(), -vel.x());   // -90 degrees
+        new_vel = btVector3(-vel.z(), vel.y(), vel.x());   // -90 degrees
     m_body->setLinearVelocity(new_vel);
+    // Also call setVelocity for Cake which overrides it to update its
+    // kinematic m_initial_velocity separately from the physics body.
     setVelocity(new_vel);
 
     // Consume the swatter
