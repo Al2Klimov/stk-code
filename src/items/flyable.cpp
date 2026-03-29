@@ -592,13 +592,18 @@ bool Flyable::tryDeflectBySwatter(AbstractKart* kart)
     if (random.get(2) == 0)
         return false;
 
-    // Rotate velocity 90 degrees horizontally (randomly left or right)
+    // Rotate velocity approximately 90 degrees horizontally.
+    // The angle is randomised within 70-110 deg, left or right.
     btVector3 vel = m_body->getLinearVelocity();
-    btVector3 new_vel;
+    float angle_deg = 70.0f + (float)random.get(41);       // 70..110
     if (random.get(2) == 0)
-        new_vel = btVector3(vel.z(), vel.y(), -vel.x());   // +90 degrees
-    else
-        new_vel = btVector3(-vel.z(), vel.y(), vel.x());   // -90 degrees
+        angle_deg = -angle_deg;
+    float rad = angle_deg * M_PI / 180.0f;
+    float c = cosf(rad);
+    float s = sinf(rad);
+    btVector3 new_vel(c * vel.x() + s * vel.z(),
+                      vel.y(),
+                      -s * vel.x() + c * vel.z());
     m_body->setLinearVelocity(new_vel);
     // Also call setVelocity for Cake which overrides it to update its
     // kinematic m_initial_velocity separately from the physics body.
