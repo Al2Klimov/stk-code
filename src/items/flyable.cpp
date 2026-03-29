@@ -35,7 +35,9 @@
 #include "graphics/mesh_tools.hpp"
 #include "guiengine/engine.hpp"
 #include "io/xml_node.hpp"
+#include "items/attachment.hpp"
 #include "items/projectile_manager.hpp"
+#include "items/swatter.hpp"
 #include "karts/abstract_kart.hpp"
 #include "karts/cannon_animation.hpp"
 #include "karts/controller/controller.hpp"
@@ -48,6 +50,7 @@
 #include "physics/physics.hpp"
 #include "tracks/track.hpp"
 #include "utils/constants.hpp"
+#include "utils/random_generator.hpp"
 #include "utils/string_utils.hpp"
 #include "utils/vs.hpp"
 
@@ -559,6 +562,51 @@ bool Flyable::hit(AbstractKart *kart_hit, PhysicalObject* object)
     return true;
 
 }   // hit
+
+// ----------------------------------------------------------------------------
+/** Checks if the target kart has an active swatter that can deflect this
+ *  projectile. If conditions are met (swatter ready, not hitting another kart,
+ *  not removing a bomb), there is a 50% chance the projectile is redirected
+ *  approximately 90 degrees horizontally. A successful deflection consumes
+ *  the swatter.
+ *  \param kart The kart that is about to be hit.
+ *  \return True if the projectile was deflected (hit should not proceed).
+ */
+bool Flyable::tryDeflectBySwatter(AbstractKart* kart)
+{
+    if (!kart || !m_has_server_state || hasAnimation())
+        return false;
+    if (isOwnerImmunity(kart))
+        return false;
+
+    Attachment* attachment = kart->getAttachment();
+    if (!attachment || attachment->getType() != Attachment::ATTACH_SWATTER)
+        return false;
+
+    Swatter* swatter = dynamic_cast<Swatter*>(attachment->getPlugin());
+    if (!swatter || !swatter->isSwatterReady() || swatter->isRemovingBomb())
+        return false;
+
+    // 50% chance of deflection
+    RandomGenerator random;
+    if (random.get(2) == 0)
+        return false;
+
+    // Rotate velocity 90 degrees horizontally (randomly left or right)
+    btVector3 vel = m_body->getLinearVelocity();
+    btVector3 new_vel;
+    if (random.get(2) == 0)
+        new_vel = btVector3(-vel.z(), vel.y(), vel.x());   // +90 degrees
+    else
+        new_vel = btVector3(vel.z(), vel.y(), -vel.x());   // -90 degrees
+    m_body->setLinearVelocity(new_vel);
+    setVelocity(new_vel);
+
+    // Consume the swatter
+    attachment->clear();
+
+    return true;
+}   // tryDeflectBySwatter
 
 // ----------------------------------------------------------------------------
 /** Creates the explosion physical effect, i.e. pushes the karts and ph

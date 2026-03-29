@@ -108,6 +108,10 @@ public:
         return m_animation_phase == SWATTER_AIMING;
     }   // isSwatterReady
     // ------------------------------------------------------------------------
+    /** Returns true if the swatter is currently playing the bomb removal
+     *  animation. */
+    bool isRemovingBomb() const { return m_bomb_remaining != -1; }
+    // ------------------------------------------------------------------------
     virtual void restoreState(BareNetworkString *buffer) OVERRIDE;
     // ------------------------------------------------------------------------
     virtual void saveState(BareNetworkString *buffer) const OVERRIDE;
