@@ -516,6 +516,7 @@ int ReplayRecorder::enumToCode (PowerupManager::PowerupType type)
         (type == PowerupManager::POWERUP_SWATTER)    ? 7 :
         (type == PowerupManager::POWERUP_RUBBERBALL) ? 8 :
         (type == PowerupManager::POWERUP_PARACHUTE)  ? 9 :
+        (type == PowerupManager::POWERUP_SHUFFLER)   ? 10 :
                                                       -1 ;
 
     return code;
@@ -550,6 +551,7 @@ PowerupManager::PowerupType ReplayRecorder::codeToEnumItem (int code)
         (code == 7) ? PowerupManager::POWERUP_SWATTER    :
         (code == 8) ? PowerupManager::POWERUP_RUBBERBALL :
         (code == 9) ? PowerupManager::POWERUP_PARACHUTE  :
+        (code == 10) ? PowerupManager::POWERUP_SHUFFLER  :
                       PowerupManager::POWERUP_NOTHING ;
 
     return type;
