@@ -154,6 +154,9 @@ bool Bowling::updateAndDelete(int ticks)
  */
 bool Bowling::hit(AbstractKart* kart, PhysicalObject* obj)
 {
+    if (kart && tryDeflectBySwatter(kart))
+        return false;
+
     bool was_real_hit = Flyable::hit(kart, obj);
     if(was_real_hit)
     {

@@ -93,6 +93,9 @@ private:
 
     /** True if the swatter animation has been played. */
     bool               m_played_swatter_animation;
+
+    /** True if the swatter is playing a deflect swing (no squash). */
+    bool               m_deflecting;
 public:
              Swatter(AbstractKart *kart, int16_t bomb_ticks, int ticks,
                      Attachment* attachment);
@@ -107,6 +110,14 @@ public:
     {
         return m_animation_phase == SWATTER_AIMING;
     }   // isSwatterReady
+    // ------------------------------------------------------------------------
+    /** Returns true if the swatter is currently playing the bomb removal
+     *  animation. */
+    bool isRemovingBomb() const { return m_bomb_remaining != -1; }
+    // ------------------------------------------------------------------------
+    /** Triggers the swing animation for a projectile deflection, then
+     *  auto-discards the swatter. */
+    void playDeflectSwing();
     // ------------------------------------------------------------------------
     virtual void restoreState(BareNetworkString *buffer) OVERRIDE;
     // ------------------------------------------------------------------------

@@ -183,6 +183,7 @@ protected:
                                     const bool turn_around=false,
                                     const btTransform* customDirection=NULL);
 
+    bool              tryDeflectBySwatter(AbstractKart* kart);
     void              moveToInfinity(bool set_moveable_trans = true);
     void              removePhysics();
     void              fixSFXSplitscreen(SFXBase* sfx);

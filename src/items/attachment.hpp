@@ -151,6 +151,9 @@ public:
     /** Return the currently associated scene node (used by e.g the swatter) */
     scene::IAnimatedMeshSceneNode* getNode() {return m_node;}
     // ------------------------------------------------------------------------
+    /** Returns the attachment plugin (used to access e.g. Swatter). */
+    AttachmentPlugin* getPlugin() const { return m_plugin; }
+    // ------------------------------------------------------------------------
     void reset()
     {
         clear();

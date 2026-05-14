@@ -35,7 +35,9 @@
 #include "graphics/mesh_tools.hpp"
 #include "guiengine/engine.hpp"
 #include "io/xml_node.hpp"
+#include "items/attachment.hpp"
 #include "items/projectile_manager.hpp"
+#include "items/swatter.hpp"
 #include "karts/abstract_kart.hpp"
 #include "karts/cannon_animation.hpp"
 #include "karts/controller/controller.hpp"
@@ -48,6 +50,7 @@
 #include "physics/physics.hpp"
 #include "tracks/track.hpp"
 #include "utils/constants.hpp"
+#include "utils/random_generator.hpp"
 #include "utils/string_utils.hpp"
 #include "utils/vs.hpp"
 
@@ -559,6 +562,64 @@ bool Flyable::hit(AbstractKart *kart_hit, PhysicalObject* object)
     return true;
 
 }   // hit
+
+// ----------------------------------------------------------------------------
+/** Checks if the target kart has an active swatter that can deflect this
+ *  projectile. If conditions are met (swatter ready, not hitting another kart,
+ *  not removing a bomb), there is a 50% chance the projectile is redirected
+ *  approximately 90 degrees horizontally. A successful deflection consumes
+ *  the swatter.
+ *  \param kart The kart that is about to be hit.
+ *  \return True if the projectile was deflected (hit should not proceed).
+ */
+bool Flyable::tryDeflectBySwatter(AbstractKart* kart)
+{
+    if (!kart || !m_has_server_state || hasAnimation())
+        return false;
+    if (isOwnerImmunity(kart))
+        return false;
+
+    Attachment* attachment = kart->getAttachment();
+    if (!attachment || attachment->getType() != Attachment::ATTACH_SWATTER)
+        return false;
+
+    Swatter* swatter = dynamic_cast<Swatter*>(attachment->getPlugin());
+    if (!swatter || !swatter->isSwatterReady() || swatter->isRemovingBomb())
+        return false;
+
+    // 50% chance of deflection
+    RandomGenerator random;
+    if (random.get(2) == 0)
+        return false;
+
+    // Rotate velocity approximately 90 degrees horizontally.
+    // The angle is randomised within 70-110 deg, left or right.
+    btVector3 vel = m_body->getLinearVelocity();
+    float angle_deg = 70.0f + (float)random.get(41);       // 70..110
+    if (random.get(2) == 0)
+        angle_deg = -angle_deg;
+    float rad = angle_deg * M_PI / 180.0f;
+    float c = cosf(rad);
+    float s = sinf(rad);
+    // Cakes fly downward, so mirror Y to deflect them upward.
+    // Bowling balls roll on the ground, so preserve Y as-is.
+    // Add ±20% random variation so the deflection isn't too perfect.
+    float y_factor = 0.8f + (float)random.get(41) / 100.0f;  // 0.80..1.20
+    float new_y = (getType() == PowerupManager::POWERUP_CAKE)
+                ? -vel.y() * y_factor : vel.y() * y_factor;
+    btVector3 new_vel(c * vel.x() + s * vel.z(),
+                      new_y,
+                      -s * vel.x() + c * vel.z());
+    m_body->setLinearVelocity(new_vel);
+    // Also call setVelocity for Cake which overrides it to update its
+    // kinematic m_initial_velocity separately from the physics body.
+    setVelocity(new_vel);
+
+    // Trigger swing animation and consume the swatter
+    swatter->playDeflectSwing();
+
+    return true;
+}   // tryDeflectBySwatter
 
 // ----------------------------------------------------------------------------
 /** Creates the explosion physical effect, i.e. pushes the karts and ph
