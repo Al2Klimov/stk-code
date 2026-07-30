@@ -1256,6 +1256,10 @@ void SkiddingAI::handleItems(const float dt, const Vec3 *aim_point, int last_nod
     case PowerupManager::POWERUP_ANVIL:
         break;   // POWERUP_ANVIL
 
+    case PowerupManager::POWERUP_SHUFFLER:
+        m_controls->setFire(true);
+        break;   // POWERUP_SHUFFLER
+
     case PowerupManager::POWERUP_SWATTER:
         {
              // if the kart has a shield, do not break it by using a swatter.

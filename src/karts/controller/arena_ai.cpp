@@ -556,6 +556,10 @@ void ArenaAI::useItems(const float dt)
         m_controls->setFire(true);       // (use it no matter what) for now
         break;   // POWERUP_SWITCH
 
+    case PowerupManager::POWERUP_SHUFFLER:
+        m_controls->setFire(true);
+        break;   // POWERUP_SHUFFLER
+
     case PowerupManager::POWERUP_PARACHUTE:
         break;   // POWERUP_PARACHUTE
 

@@ -212,6 +212,7 @@ namespace Scripting
             engine->RegisterEnumValue("PowerupType", "SWATTER", PowerupManager::PowerupType::POWERUP_SWATTER);
             engine->RegisterEnumValue("PowerupType", "SWITCH", PowerupManager::PowerupType::POWERUP_SWITCH);
             engine->RegisterEnumValue("PowerupType", "ZIPPER", PowerupManager::PowerupType::POWERUP_ZIPPER);
+            engine->RegisterEnumValue("PowerupType", "SHUFFLER", PowerupManager::PowerupType::POWERUP_SHUFFLER);
         }
     }
 

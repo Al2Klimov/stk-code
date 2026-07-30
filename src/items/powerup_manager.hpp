@@ -136,7 +136,8 @@ public:
                       POWERUP_SWITCH, POWERUP_SWATTER, POWERUP_RUBBERBALL,
                       POWERUP_PARACHUTE,
                       POWERUP_ANVIL,      //powerup.cpp assumes these two come last
-                      POWERUP_LAST=POWERUP_ANVIL,
+                      POWERUP_SHUFFLER,
+                      POWERUP_LAST=POWERUP_SHUFFLER,
                       POWERUP_MAX
     };
 

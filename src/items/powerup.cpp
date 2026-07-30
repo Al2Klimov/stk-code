@@ -30,11 +30,13 @@
 #include "karts/controller/controller.hpp"
 #include "karts/kart_properties.hpp"
 #include "modes/world.hpp"
+#include "modes/world_with_rank.hpp"
 #include "network/network_config.hpp"
 #include "network/network_string.hpp"
 #include "network/rewind_manager.hpp"
 #include "physics/triangle_mesh.hpp"
 #include "tracks/track.hpp"
+#include "utils/random_generator.hpp"
 #include "utils/string_utils.hpp"
 #include "utils/log.hpp" //TODO: remove after debugging is done
 
@@ -181,6 +183,10 @@ void Powerup::set(PowerupManager::PowerupType type, int n)
             break ;
 
         case PowerupManager::POWERUP_SWITCH:
+            m_sound_use = SFXManager::get()->createSoundSource("swap");
+            break;
+
+        case PowerupManager::POWERUP_SHUFFLER:
             m_sound_use = SFXManager::get()->createSoundSource("swap");
             break;
 
@@ -478,6 +484,117 @@ void Powerup::use()
             }
         }
         break;
+
+    case PowerupManager::POWERUP_SHUFFLER:
+        {
+            // Collect all non-ghost, non-eliminated karts
+            std::vector<AbstractKart*> valid_karts;
+            for (unsigned int i = 0; i < world->getNumKarts(); ++i)
+            {
+                AbstractKart *kart = world->getKart(i);
+                if (!kart->isGhostKart() && !kart->isEliminated())
+                    valid_karts.push_back(kart);
+            }
+
+            if (valid_karts.size() > 1)
+            {
+                // Collect original positions
+                std::vector<int> positions;
+                for (unsigned int i = 0; i < valid_karts.size(); ++i)
+                    positions.push_back(valid_karts[i]->getPosition());
+
+                // Generate a random permutation where no element stays in place
+                // (a derangement). For even count, do pairwise swaps.
+                // For odd count, do pairwise swaps of all but last three,
+                // then do a 3-cycle on the last three.
+                RandomGenerator rg;
+                std::vector<int> shuffled(positions);
+                unsigned int n = (unsigned int)valid_karts.size();
+
+                if (n == 2)
+                {
+                    // Simply swap the two
+                    std::swap(shuffled[0], shuffled[1]);
+                }
+                else if (n % 2 == 0)
+                {
+                    // Even: create random pairwise swaps
+                    // Shuffle indices, then swap pairs
+                    std::vector<unsigned int> indices(n);
+                    for (unsigned int i = 0; i < n; ++i)
+                        indices[i] = i;
+                    // Fisher-Yates shuffle on indices
+                    for (unsigned int i = n - 1; i > 0; --i)
+                    {
+                        unsigned int j = rg.get(i + 1);
+                        std::swap(indices[i], indices[j]);
+                    }
+                    // Swap pairs: (indices[0], indices[1]),
+                    //              (indices[2], indices[3]), ...
+                    for (unsigned int i = 0; i < n; i += 2)
+                    {
+                        std::swap(shuffled[indices[i]],
+                                  shuffled[indices[i + 1]]);
+                    }
+                }
+                else
+                {
+                    // Odd (n >= 3): shuffle indices, pairwise swap all but
+                    // last 3, then 3-cycle the last 3
+                    std::vector<unsigned int> indices(n);
+                    for (unsigned int i = 0; i < n; ++i)
+                        indices[i] = i;
+                    // Fisher-Yates shuffle on indices
+                    for (unsigned int i = n - 1; i > 0; --i)
+                    {
+                        unsigned int j = rg.get(i + 1);
+                        std::swap(indices[i], indices[j]);
+                    }
+                    // Pairwise swap all but last 3
+                    for (unsigned int i = 0; i + 2 < n - 1; i += 2)
+                    {
+                        std::swap(shuffled[indices[i]],
+                                  shuffled[indices[i + 1]]);
+                    }
+                    // 3-cycle on last 3: a->b->c->a
+                    unsigned int a = indices[n - 3];
+                    unsigned int b = indices[n - 2];
+                    unsigned int c = indices[n - 1];
+                    int tmp = shuffled[a];
+                    shuffled[a] = shuffled[c];
+                    shuffled[c] = shuffled[b];
+                    shuffled[b] = tmp;
+                }
+
+                // Apply the new positions
+                WorldWithRank *wwr =
+                    dynamic_cast<WorldWithRank*>(world);
+                if (wwr)
+                {
+                    wwr->beginSetKartPositions();
+                    for (unsigned int i = 0; i < valid_karts.size(); ++i)
+                    {
+                        wwr->setKartPosition(
+                            valid_karts[i]->getWorldKartId(),
+                            shuffled[i]);
+                    }
+                    wwr->endSetKartPositions();
+                }
+                else
+                {
+                    // Fallback for non-ranked worlds
+                    for (unsigned int i = 0; i < valid_karts.size(); ++i)
+                        valid_karts[i]->setPosition(shuffled[i]);
+                }
+            }
+
+            if (!has_played_sound)
+            {
+                m_sound_use->setPosition(m_kart->getXYZ());
+                m_sound_use->play();
+            }
+            break;
+        }
 
     case PowerupManager::POWERUP_NOTHING:
         {
