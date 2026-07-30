@@ -84,6 +84,7 @@ Swatter::Swatter(AbstractKart *kart, int16_t bomb_ticks, int ticks,
     m_swat_sound = NULL;
     m_swatter_animation_ticks = 0;
     m_played_swatter_animation = false;
+    m_deflecting = false;
 }   // Swatter
 
 // ----------------------------------------------------------------------------
@@ -290,14 +291,16 @@ bool Swatter::updateAndTestFinished()
                 {
                     // Squash the karts and items around and
                     // change the current phase
-                    squashThingsAround();
+                    if (!m_deflecting)
+                        squashThingsAround();
                     m_animation_phase = SWATTER_FROM_TARGET;
                     const int end_ticks = ticks_start + stk_config->time2Ticks(0.5f);
-                    if (RaceManager::get()->isBattleMode() ||
+                    if (m_deflecting ||
+                        RaceManager::get()->isBattleMode() ||
                         RaceManager::get()->isSoccerMode())
                     {
-                        // Remove swatter from kart in arena gameplay
-                        // after one successful hit
+                        // Remove swatter from kart after deflection,
+                        // or in arena gameplay after one successful hit
                         m_discard_now = true;
                         m_discard_ticks = end_ticks;
                     }
@@ -441,6 +444,22 @@ void Swatter::squashThingsAround()
 }   // squashThingsAround
 
 // ----------------------------------------------------------------------------
+/** Triggers the swing-down animation for a projectile deflection.  The swing
+ *  plays out via the normal SWATTER_TO_TARGET / SWATTER_FROM_TARGET phases,
+ *  but squashThingsAround() is skipped and the swatter is discarded once the
+ *  return phase finishes.
+ */
+void Swatter::playDeflectSwing()
+{
+    m_animation_phase  = SWATTER_TO_TARGET;
+    m_played_swatter_animation = false;
+    m_deflecting       = true;
+    m_closest_kart     = NULL;   // no kart to squash
+    m_swatter_animation_ticks =
+        m_attachment->getTicksLeft() - stk_config->time2Ticks(0.166666672f);
+}   // playDeflectSwing
+
+// ----------------------------------------------------------------------------
 void Swatter::restoreState(BareNetworkString* buffer)
 {
     int16_t prev_bomb_remaing = m_bomb_remaining;
@@ -467,6 +486,7 @@ void Swatter::restoreState(BareNetworkString* buffer)
         m_discard_now = (combined >> 7) == 1;
         m_discard_ticks = buffer->getUInt32();
         m_swatter_animation_ticks = buffer->getUInt16();
+        m_deflecting = buffer->getUInt8() != 0;
     }
     else
         m_discard_ticks = buffer->getUInt32();
@@ -483,7 +503,8 @@ void Swatter::saveState(BareNetworkString* buffer) const
         combined |= m_animation_phase << 5;
         combined |= (m_discard_now ? (1 << 7) : 0);
         buffer->addUInt8(combined).addUInt32(m_discard_ticks)
-            .addUInt16(m_swatter_animation_ticks);
+            .addUInt16(m_swatter_animation_ticks)
+            .addUInt8(m_deflecting ? 1 : 0);
     }
     else
         buffer->addUInt32(m_discard_ticks);
