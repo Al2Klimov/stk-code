@@ -702,7 +702,10 @@ void LinearWorld::getKartsDisplayInfo(
                            - ticks_of_leader;
                 str = "+" + StringUtils::ticksTimeToString(ticks_behind);
             }
-            rank_info.m_text = player_name + irr::core::stringw(str.c_str());
+            rank_info.m_text = player_name;
+            if (!player_name.empty() && position != 1)
+                rank_info.m_text += L" ";
+            rank_info.m_text += irr::core::stringw(str.c_str());
         }
         else if (kart->hasFinishedRace())
         {
